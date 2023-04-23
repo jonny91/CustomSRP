@@ -11,10 +11,12 @@
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 public partial class CameraRenderer
 {
+    partial void PrepareBuffer();
     partial void DrawUnsupportedShaders();
     partial void DrawGizmos();
     partial void PrepareForSceneWindow();
@@ -30,6 +32,18 @@ public partial class CameraRenderer
         new ShaderTagId("VertexLMRGBM"),
         new ShaderTagId("VertexLM"),
     };
+
+#if UNITY_EDITOR
+    private string SampleName { get; set; }
+    partial void PrepareBuffer()
+    {
+        Profiler.BeginSample("Editor Only");
+        _buffer.name = SampleName = _camera.name;
+        Profiler.EndSample();
+    }
+#else
+    const string SampleName = bufferName;
+#endif
 
 
     /// <summary>
