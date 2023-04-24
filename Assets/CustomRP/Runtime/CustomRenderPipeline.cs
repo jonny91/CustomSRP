@@ -14,6 +14,11 @@ public class CustomRenderPipeline : RenderPipeline
 {
     private CameraRenderer _renderer = new CameraRenderer();
 
+    public CustomRenderPipeline()
+    {
+        GraphicsSettings.useScriptableRenderPipelineBatching = true;
+    }
+
     /// <summary>
     /// 每一帧都会调用Render方法进行画面渲染
     /// </summary>
