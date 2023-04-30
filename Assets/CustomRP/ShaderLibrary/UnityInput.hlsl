@@ -1,6 +1,7 @@
 #ifndef CUSTOM_UNITY_INPUT_INCLUDED
 #define CUSTOM_UNITY_INPUT_INCLUDED
 
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 //这些信息在渲染时会被传递给着色器，以便计算每个像素的最终颜色。它是一个常量缓冲区，不能被修改。
 CBUFFER_START(UnityPerDraw)
 //定义从模型空间转换到世界空间的转换矩阵
