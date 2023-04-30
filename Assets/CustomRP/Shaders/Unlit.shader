@@ -15,6 +15,8 @@ Shader "CustomRP/Unlit"
         {
             Name "Unlit"
             HLSLPROGRAM
+            #pragma target 3.5
+
             // 增加变体使用shader可以支持instance
             #pragma multi_compile_instancing
 

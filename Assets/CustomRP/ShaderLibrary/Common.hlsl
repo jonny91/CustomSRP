@@ -2,7 +2,7 @@
 #define CUSTOM_COMMON_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "UnityInput.hlsl"
 //定义一些宏取代
 #define UNITY_MATRIX_M unity_ObjectToWorld
@@ -15,7 +15,6 @@
 #define UNITY_PREV_MATRIX_I_M glstate_matrix_projection
 
 //使用 srp中的库代替
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 // float3 TransformObjectToWorld(float3 positionOS)
 // {
 //     return mul(unity_ObjectToWorld, float4(positionOS, 1.0)).xyz;
@@ -25,5 +24,6 @@
 // {
 //     return mul(unity_MatrixVP, float4(positionWS, 1.0));
 // }
-
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 #endif
