@@ -13,10 +13,16 @@ using UnityEngine.Rendering;
 public class CustomRenderPipeline : RenderPipeline
 {
     private CameraRenderer _renderer = new CameraRenderer();
+    private readonly bool _useDynamicBatching;
+    private readonly bool _useGPUInstancing;
+    private readonly bool _useSRPBatcher;
 
-    public CustomRenderPipeline()
+    public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher)
     {
-        GraphicsSettings.useScriptableRenderPipelineBatching = true;
+        this._useDynamicBatching = useDynamicBatching;
+        this._useGPUInstancing = useGPUInstancing;
+        this._useSRPBatcher = useSRPBatcher;
+        GraphicsSettings.useScriptableRenderPipelineBatching = this._useSRPBatcher;
     }
 
     /// <summary>
@@ -29,7 +35,7 @@ public class CustomRenderPipeline : RenderPipeline
         //可以让每个相机使用不同的渲染方式绘制画面
         foreach (var camera in cameras)
         {
-            _renderer.Render(context, camera);
+            _renderer.Render(context, camera, _useDynamicBatching, _useGPUInstancing);
         }
     }
 }

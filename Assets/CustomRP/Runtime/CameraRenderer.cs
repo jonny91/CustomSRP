@@ -22,8 +22,9 @@ public partial class CameraRenderer
 
     private ScriptableRenderContext _context;
     private Camera _camera;
-
-    public void Render(ScriptableRenderContext context, Camera camera)
+    
+    public void Render(ScriptableRenderContext context, Camera camera,
+        bool useDynamicBatching, bool useGPUInstancing)
     {
         this._context = context;
         this._camera = camera;
@@ -42,7 +43,7 @@ public partial class CameraRenderer
         }
 
         Setup();
-        DrawVisibleGeometry();
+        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         // 绘制SRP不支持的着色器
         DrawUnsupportedShaders();
         DrawGizmos();
@@ -84,7 +85,7 @@ public partial class CameraRenderer
     /// <summary>
     /// 绘制可见物
     /// </summary>
-    private void DrawVisibleGeometry()
+    private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
     {
         //绘制顺序和指定渲染相机
         //确定相机的透明排序模式 是否使用正交或者基于距离的排序
@@ -93,7 +94,12 @@ public partial class CameraRenderer
             criteria = SortingCriteria.CommonOpaque
         };
         //设置渲染的Shader Pass和排序模式
-        var drawingSettings = new DrawingSettings(_unlitShaderTagId, sortingSettings);
+        var drawingSettings = new DrawingSettings(_unlitShaderTagId, sortingSettings)
+        {
+            //设置渲染批处理使用状态
+            enableDynamicBatching = useDynamicBatching,
+            enableInstancing = useGPUInstancing,
+        };
         //设置哪些类型的渲染队列可以被绘制
         var filteringSettings = new FilteringSettings(RenderQueueRange.all);
         //绘制图像

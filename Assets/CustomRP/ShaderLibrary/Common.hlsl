@@ -11,8 +11,8 @@
 #define UNITY_MATRIX_VP unity_MatrixVP
 #define UNITY_MATRIX_P glstate_matrix_projection
 //下面两个应该不对 例子中没用到 为了不报错 随便赋值了两个 不管了先
-#define UNITY_PREV_MATRIX_M glstate_matrix_projection
-#define UNITY_PREV_MATRIX_I_M glstate_matrix_projection
+#define UNITY_PREV_MATRIX_M UNITY_MATRIX_M
+#define UNITY_PREV_MATRIX_I_M UNITY_MATRIX_I_M
 
 //使用 srp中的库代替
 // float3 TransformObjectToWorld(float3 positionOS)
