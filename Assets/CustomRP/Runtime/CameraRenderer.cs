@@ -14,6 +14,7 @@ public partial class CameraRenderer
 {
     private const string bufferName = "Render Camera";
     static ShaderTagId _unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+    static ShaderTagId _litShaderTagId = new ShaderTagId("CustomLit");
 
     private CommandBuffer _buffer = new CommandBuffer()
     {
@@ -22,7 +23,8 @@ public partial class CameraRenderer
 
     private ScriptableRenderContext _context;
     private Camera _camera;
-    
+    private Lighting _lighting = new Lighting();
+
     public void Render(ScriptableRenderContext context, Camera camera,
         bool useDynamicBatching, bool useGPUInstancing)
     {
@@ -43,6 +45,7 @@ public partial class CameraRenderer
         }
 
         Setup();
+        _lighting.Setup(context, _cullingResults);
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         // 绘制SRP不支持的着色器
         DrawUnsupportedShaders();
@@ -100,6 +103,10 @@ public partial class CameraRenderer
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing,
         };
+
+        //渲染CustomLit表示的pass
+        drawingSettings.SetShaderPassName(1, _litShaderTagId);
+
         //设置哪些类型的渲染队列可以被绘制
         var filteringSettings = new FilteringSettings(RenderQueueRange.all);
         //绘制图像

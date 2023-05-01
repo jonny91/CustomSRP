@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CustomRP
   m_EditorClassIdentifier: 
   UseDynamicBatching: 1
-  UseGPUInstancing: 1
-  UseSRPBatcher: 1
+  UseGPUInstancing: 0
+  UseSRPBatcher: 0
