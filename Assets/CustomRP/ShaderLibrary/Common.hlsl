@@ -24,6 +24,13 @@
 // {
 //     return mul(unity_MatrixVP, float4(positionWS, 1.0));
 // }
+
+float Square(float v)
+{
+    return v * v;
+}
+
+
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 #endif
