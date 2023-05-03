@@ -13,17 +13,21 @@ using UnityEngine.Rendering;
 public class CustomRenderPipeline : RenderPipeline
 {
     private CameraRenderer _renderer = new CameraRenderer();
+
     //每一帧把可以进行批处理的模型网格进行合并，再把合并好的数据传递给CPU，使用同一个材质进行渲染
     //有很多限制，比如使用逐对象材质属性失效、顶点属性规模小于900
     private readonly bool _useDynamicBatching;
     private readonly bool _useGPUInstancing;
     private readonly bool _useSRPBatcher;
+    private readonly ShadowSettings _shadowSettings;
 
-    public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher)
+    public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher,
+        ShadowSettings shadowSettings)
     {
         this._useDynamicBatching = useDynamicBatching;
         this._useGPUInstancing = useGPUInstancing;
         this._useSRPBatcher = useSRPBatcher;
+        this._shadowSettings = shadowSettings;
         GraphicsSettings.useScriptableRenderPipelineBatching = this._useSRPBatcher;
         //灯光强度转到线性空间线
         GraphicsSettings.lightsUseLinearIntensity = true;
@@ -39,7 +43,7 @@ public class CustomRenderPipeline : RenderPipeline
         //可以让每个相机使用不同的渲染方式绘制画面
         foreach (var camera in cameras)
         {
-            _renderer.Render(context, camera, _useDynamicBatching, _useGPUInstancing);
+            _renderer.Render(context, camera, _useDynamicBatching, _useGPUInstancing, _shadowSettings);
         }
     }
 }

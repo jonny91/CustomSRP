@@ -36,14 +36,21 @@ public class Lighting
     private static Vector4[] dirLightColors = new Vector4[maxDirLightCount];
     private static Vector4[] dirLightDirections = new Vector4[maxDirLightCount];
 
-    public void Setup(ScriptableRenderContext context, CullingResults cullingResults)
+    private Shadows _shadows = new Shadows();
+
+    public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
     {
         this._cullingResults = cullingResults;
 
         buffer.BeginSample(bufferName);
+        //传递阴影数据
+        _shadows.Setup(context, cullingResults, shadowSettings);
+        
         // 发送光源数据
         // SetupDirectionLight();
         SetupLights();
+        _shadows.Render();
+        
         buffer.EndSample(bufferName);
         context.ExecuteCommandBuffer(buffer);
         buffer.Clear();
@@ -72,7 +79,7 @@ public class Lighting
                 }
             }
         }
-        
+
         buffer.SetGlobalInt(dirLightCountId, dirLightCount);
         buffer.SetGlobalVectorArray(dirLightColorsId, dirLightColors);
         buffer.SetGlobalVectorArray(dirLightDirectionsId, dirLightDirections);
@@ -103,5 +110,14 @@ public class Lighting
         这个矩阵可以用来将局部坐标系下的顶点坐标转换到世界坐标系下，使其与光源进行正确的相交计算。
          */
         dirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        _shadows.ReserveDirectionalShadows(visibleLight.light, index);
+    }
+
+    /// <summary>
+    /// 释放阴影贴图RT内存
+    /// </summary>
+    public void Cleanup()
+    {
+        _shadows.Cleanup();
     }
 }

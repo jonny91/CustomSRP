@@ -26,7 +26,7 @@ public partial class CameraRenderer
     private Lighting _lighting = new Lighting();
 
     public void Render(ScriptableRenderContext context, Camera camera,
-        bool useDynamicBatching, bool useGPUInstancing)
+        bool useDynamicBatching, bool useGPUInstancing, ShadowSettings shadowSettings)
     {
         this._context = context;
         this._camera = camera;
@@ -39,17 +39,22 @@ public partial class CameraRenderer
         PrepareForSceneWindow();
 
         //只渲染相机视野内的物体，视野外的要剔除掉
-        if (!Cull())
+        // 通过传入的阴影最大距离和相机的远截面进行比较，将小的作为渲染管线的最大阴影距离
+        if (!Cull(shadowSettings.MaxDistance))
         {
             return;
         }
 
+        //因为要在相机正式渲染前渲染阴影，所以放在前面
+        //光源数据和阴影数据发送到GPU计算光照
+        _lighting.Setup(context, _cullingResults, shadowSettings);
+        
         Setup();
-        _lighting.Setup(context, _cullingResults);
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         // 绘制SRP不支持的着色器
         DrawUnsupportedShaders();
         DrawGizmos();
+        _lighting.Cleanup();
         Submit();
     }
 
@@ -129,11 +134,13 @@ public partial class CameraRenderer
 
     private CullingResults _cullingResults;
 
-    bool Cull()
+    bool Cull(float maxShadowDistance)
     {
         ScriptableCullingParameters p;
         if (_camera.TryGetCullingParameters(out p))
         {
+            //得到最大阴影距离，和相机远截面比较，取消的那个最为阴影距离
+            p.shadowDistance = Mathf.Min(maxShadowDistance, _camera.farClipPlane);
             //最后可见的物体
             //执行剔除
             _cullingResults = _context.Cull(ref p);
