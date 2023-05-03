@@ -103,6 +103,26 @@ public class Shadows
     {
         ShadowedDirectionalLight light = ShadowedDirectionalLights[index];
         var shadowSettings = new ShadowDrawingSettings(_cullingResults, index);
+        //3. 阴影贴图本质也是一张深度图，它记录了从光源位置出发，到能看到的场景中距离它最近的表面位置（深度信息）。
+        //但是方向光并没有一个真实位置，
+        //我们要做地是找出与光的方向匹配的视图和投影矩阵，
+        //并给我们一个裁剪空间的立方体，
+        //该立方体与包含光源阴影的摄影机的可见区域重叠，这些数据的获取我们不用自己去实现，
+        //可以直接调用cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives方法，
+        //它需要9个参数。第1个是可见光的索引，
+        //第2、3、4个参数用于设置阴影级联数据，后面我们会处理它，
+        //第5个参数是阴影贴图的尺寸，
+        //第6个参数是阴影近平面偏移，
+        //我们先忽略它。最后三个参数都是输出参数，一个是视图矩阵，一个是投影矩阵，一个是ShadowSplitData对象，
+        //它描述有关给定阴影分割（如定向级联）的剔除信息。
+        _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(light.VisibleLightIndex, 0, 1,
+            Vector3.zero, tileSize, 0f,
+            out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix, out ShadowSplitData splitData);
+
+        shadowSettings.splitData = splitData;
+        _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+        ExecuteBuffer();
+        _context.DrawShadows(ref shadowSettings);
     }
 
     public void ReserveDirectionalShadows(Light light, int visibleLightIndex)

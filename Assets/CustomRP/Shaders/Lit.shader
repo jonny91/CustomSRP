@@ -49,6 +49,29 @@ Shader "CustomRP/Lit"
             #include "LitPass.hlsl"
             ENDHLSL
         }
+        
+         Pass
+        {
+            TAGS
+            {
+                "LightMode" = "ShadowCaster"
+            }
+            ColorMask 0
+            
+            HLSLPROGRAM
+            #pragma target 3.5
+
+            #pragma shader_feature _CLIPPING
+            
+            // 增加变体使用shader可以支持instance
+            #pragma multi_compile_instancing
+
+            #pragma vertex ShadowCasterPassVertex
+            #pragma fragment ShadowCasterPassFragment
+
+            #include "ShadowCasterPass.hlsl"
+            ENDHLSL
+        }
     }
     
     CustomEditor "CustomShaderGUI"
